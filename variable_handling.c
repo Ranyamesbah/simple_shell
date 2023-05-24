@@ -1,5 +1,4 @@
 #include "header_main.h"
-
 /**
  * is_chain - Tests if the current character in the buffer is a chain delimiter
  * @info: The parameter struct
@@ -35,9 +34,12 @@ int is_chain(info_t *info, char *buf, size_t *p)
 	*p = j;
 	return (1);
 }
-
 /**
+<<<<<<< HEAD
  * check_chain - Checks whether we should continue chaining
+=======
+ * check_chain - we should continue chaining based on the last status
+>>>>>>> f80cb16ea2713056d9bf2dd4ac9dc81bb44cb5af
  * @info: The parameter struct
  * @buf: The character buffer
  * @p: Address of the current position in buf
@@ -146,7 +148,6 @@ int replace_vars(info_t *info)
 	}
 	return (0);
 }
-
 /**
  * replace_string - Replaces a string
  * @old: Address of the old string
