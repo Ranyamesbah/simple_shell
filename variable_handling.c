@@ -37,7 +37,7 @@ int is_chain(info_t *info, char *buf, size_t *p)
 }
 
 /**
- * check_chain - Checks whether we should continue chaining based on the last status
+ * check_chain - Checks whether we should continue chaining
  * @info: The parameter struct
  * @buf: The character buffer
  * @p: Address of the current position in buf
@@ -118,20 +118,28 @@ int replace_vars(info_t *info)
 		if (!str_cmp(info->argv[i], "$?"))
 		{
 			replace_string(&(info->argv[i]),
-				string_duplicate(convert_to_string(info->status, 10, 0)));
+				string_duplicate(
+					convert_to_string(info->status, 10, 0)
+					)
+				);
 			continue;
 		}
 		if (!str_cmp(info->argv[i], "$$"))
 		{
 			replace_string(&(info->argv[i]),
-				string_duplicate(convert_to_string(getpid(), 10, 0)));
+				string_duplicate(convert_to_string(
+						getpid(), 10, 0)
+					)
+				);
 			continue;
 		}
 		node = node_with_prefix(info->env, &info->argv[i][1], '=');
 		if (node)
 		{
 			replace_string(&(info->argv[i]),
-				string_duplicate(find_character(node->str, '=') + 1));
+				string_duplicate(
+					find_character(node->str, '=') + 1)
+				);
 			continue;
 		}
 		replace_string(&info->argv[i], string_duplicate(""));

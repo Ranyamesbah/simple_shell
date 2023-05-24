@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 				flushBufferStderr();
 				exit(127);
 			}
-			return EXIT_FAILURE;
+			return (EXIT_FAILURE);
 		}
 		shellInfo.readfd = fileDescriptor;
 	}
@@ -42,5 +42,5 @@ int main(int argc, char **argv)
 	readHistoryFile(&shellInfo);
 	shellLoop(&shellInfo, argv);
 
-	return EXIT_SUCCESS;
+	return (EXIT_SUCCESS);
 }

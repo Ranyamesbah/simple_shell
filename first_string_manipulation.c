@@ -12,7 +12,7 @@ char *string_copy(char *dest, char *src)
 	int i = 0;
 
 	if (dest == src || src == NULL)
-		return dest;
+		return (dest);
 
 	while (src[i])
 	{
@@ -21,7 +21,7 @@ char *string_copy(char *dest, char *src)
 	}
 	dest[i] = '\0';
 
-	return dest;
+	return (dest);
 }
 
 /**
@@ -36,19 +36,19 @@ char *string_duplicate(const char *str)
 	char *ret;
 
 	if (str == NULL)
-		return NULL;
+		return (NULL);
 
 	while (*str++)
 		length++;
 
 	ret = malloc(sizeof(char) * (length + 1));
 	if (!ret)
-		return NULL;
+		return (NULL);
 
 	for (length++; length--;)
 		ret[length] = *--str;
 
-	return ret;
+	return (ret);
 }
 
 /**
@@ -92,5 +92,5 @@ int write_character(char c)
 	if (c != BUF_FLUSH)
 		buf[i++] = c;
 
-	return 1;
+	return (1);
 }

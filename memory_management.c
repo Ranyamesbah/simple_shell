@@ -12,7 +12,7 @@ int free_and_nullify_ptr(void **ptr)
 	{
 		free(*ptr);
 		*ptr = NULL;
-		return 1;  // Freed successfully
+		return (1);  // Freed successfully
 	}
-	return 0;  // Pointer was already NULL or not valid
+	return (0);  // Pointer was already NULL or not valid
 }
