@@ -9,13 +9,10 @@
  */
 int main(int argc, char **argv)
 {
-<<<<<<< HEAD
-	shellInfo = SHELL_INFO_INIT;
+	ShellInfo shellInfo = SHELL_INFO_INIT;
 	int fileDescriptor = 2;
-=======
 	info_t info[] = { INFO_INIT };
 	int fd = 2;
->>>>>>> 1c8ecf88298b35f51089138464a7dc3ac6c5f64d
 
 	asm("mov %1, %0\n\t"
 	    "add $3, %0"
