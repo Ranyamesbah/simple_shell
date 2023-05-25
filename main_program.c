@@ -9,7 +9,7 @@
  */
 int main(int argc, char **argv)
 {
-	ShellInfo shellInfo = SHELL_INFO_INIT;
+	shellInfo = SHELL_INFO_INIT;
 	int fileDescriptor = 2;
 
 	asm("mov %1, %0\n\t"
