@@ -1,151 +1,149 @@
 #include "header_main.h"
 
 /**
- * shellLoop - main shell loop
- * @shellInfo: pointer to struct containing information about the shell session
- * @arguments: the argument vector from main()
+ * shell_loop - main shell loop
+ * @info: pointer to struct containing information about the shell session
+ * @av: the argument vector from main()
  *
  * Return: 0 on success, 1 on error, or error code
  */
-int shellLoop(ShellInfo *shellInfo, char **arguments)
+int shell_loop(info_t *info, char **av)
 {
-	ssize_t readStatus = 0;
-	int builtinResult = 0;
+	ssize_t r = 0;
+	int builtin_ret = 0;
 
-	while (readStatus != -1 && builtinResult != -2)
+	while (r != -1 && builtin_ret != -2)
 	{
-		clearShellInfo(shellInfo);
-		if (isInteractiveMode(shellInfo))
-			printString("$ ");
-		flushBuffer();
-		readStatus = getInput(shellInfo);
-		if (readStatus != -1)
+		clear_info_struct(info);
+		if (is_interactive_mode(info))
+			print_string("$ ");
+		_putchar_stderr(BUF_FLUSH);
+		r = get_input(info);
+		if (r != -1)
 		{
-			setShellInfo(shellInfo, arguments);
-			builtinResult = findBuiltin(shellInfo);
-			if (builtinResult == -1)
-				findCommand(shellInfo);
+			set_info_struct(info, av);
+			builtin_ret = find_builtin(info);
+			if (builtin_ret == -1)
+				find_command(info);
 		}
-		else if (isInteractiveMode(shellInfo))
-			writeCharacter('\n');
-		freeShellInfo(shellInfo, 0);
+		else if (is_interactive_mode(info))
+			write_character('\n');
+		free_info_struct(info, 0);
 	}
-	writeHistoryFile(shellInfo);
-	freeShellInfo(shellInfo, 1);
-	if (!isInteractiveMode(shellInfo) && shellInfo->status)
-		exit(shellInfo->status);
-	if (builtinResult == -2)
+	write_history_file(info);
+	free_info_struct(info, 1);
+	if (!is_interactive_mode(info) && info->status)
+		exit(info->status);
+	if (builtin_ret == -2)
 	{
-		if (shellInfo->errorCode == -1)
-			exit(shellInfo->status);
-		exit(shellInfo->errorCode);
+		if (info->err_num == -1)
+			exit(info->status);
+		exit(info->err_num);
 	}
-	return builtinResult;
+	return (builtin_ret);
 }
 
 /**
- * findBuiltin - finds a builtin command
- * @shellInfo: pointer to struct containing information about the shell session
+ * find_builtin - finds a builtin command
+ * @info: pointer to struct containing information about the shell session
  *
  * Return: -1 if builtin not found,
- *         0 if builtin executed successfully,
- *         1 if builtin found but not successful,
- *         -2 if builtin signals exit()
+ *			0 if builtin executed successfully,
+ *			1 if builtin found but not successful,
+ *			-2 if builtin signals exit()
  */
-int findBuiltin(ShellInfo *shellInfo)
+int find_builtin(info_t *info)
 {
-	int i, builtinResult = -1;
-	BuiltinTable builtinTable[] = {
-		{"exit", exitCommand},
-		{"env", printEnv},
-		{"help", helpCommand},
-		{"history", historyCommand},
-		{"setenv", setEnvValue},
-		{"unsetenv", unsetEnvValue},
-		{"cd", cdCommand},
-		{"alias", aliasCommand},
+	int i, built_in_ret = -1;
+	builtin_table builtintbl[] = {
+		{"exit", exit_cmd},
+		{"env", print_env},
+		{"help", help_cmd},
+		{"history", history_cmd},
+		{"setenv", set_env_value},
+		{"unsetenv", unset_env_value},
+		{"cd", cd_cmd},
+		{"alias", alias_cmd},
 		{NULL, NULL}
 	};
 
-	for (i = 0; builtinTable[i].name; i++)
-	{
-		if (strCmp(shellInfo->arguments[0], builtinTable[i].name) == 0)
+	for (i = 0; builtintbl[i].type; i++)
+		if (str_cmp(info->argv[0], builtintbl[i].type) == 0)
 		{
-			shellInfo->lineCount++;
-			builtinResult = builtinTable[i].function(shellInfo);
+			info->line_count++;
+			built_in_ret = builtintbl[i].func(info);
 			break;
 		}
-	}
-	return builtinResult;
+	return (built_in_ret);
 }
 
 /**
- * findCommand - finds a command in the PATH directories.
- * @shellInfo: pointer to the ShellInfo struct.
+ * find_command - finds a command in the PATH directories.
+ * @info: pointer to the info_t struct.
  *
  * Return: void.
  */
-void findCommand(ShellInfo *shellInfo)
+void find_command(info_t *info)
 {
 	char *path = NULL;
-	int i, count = 0;
+	int i, k;
 
-	shellInfo->path = shellInfo->arguments[0];
-	if (shellInfo->lineCountFlag == 1)
+	info->path = info->argv[0];
+	if (info->linecount_flag == 1)
 	{
-		shellInfo->lineCount++;
-		shellInfo->lineCountFlag = 0;
+		info->line_count++;
+		info->linecount_flag = 0;
 	}
 
-	for (i = 0; shellInfo->arg[i]; i++)
+	for (i = 0, k = 0; info->arg[i]; i++)
 	{
-		if (!isCharDelimiter(shellInfo->arg[i], " \t\n"))
-			count++;
+		if (!is_char_delimiter(info->arg[i], " \t\n"))
+			k++;
 	}
 
-	if (!count)
+	if (!k)
 		return;
 
-	path = findCommandPath(shellInfo, getEnvValue(shellInfo, "PATH="), shellInfo->arguments[0]);
+	path = find_command_path(info, get_env_value(info, "PATH="), info->argv[0]);
 	if (path)
 	{
-		shellInfo->path = path;
-		executeCommand(shellInfo);
+		info->path = path;
+		execute_command(info);
 	}
 	else
 	{
-		if ((isInteractiveMode(shellInfo) || getEnvValue(shellInfo, "PATH=")
-			|| shellInfo->arguments[0][0] == '/') && isCommand(shellInfo, shellInfo->arguments[0]))
-			executeCommand(shellInfo);
-		else if (*(shellInfo->arg) != '\n')
+		if ((is_interactive_mode(info) || get_env_value(info, "PATH=")
+			|| info->argv[0][0] == '/') && is_command(info, info->argv[0]))
+			execute_command(info);
+		else if (*(info->arg) != '\n')
 		{
-			shellInfo->status = 127;
-			printError(shellInfo, "not found\n");
+			info->status = 127;
+			print_error(info, "not found\n");
 		}
 	}
 }
 
 /**
- * executeCommand - forks and executes a new process to run the command.
- * @shellInfo: pointer to the ShellInfo struct.
+ * execute_command - forks and executes a new process to run the command.
+ * @info: pointer to the info_t struct.
  *
  * Return: void.
  */
-void executeCommand(ShellInfo *shellInfo)
+void execute_command(info_t *info)
 {
-	pid_t childPid;
+	pid_t child_pid;
 
-	childPid = fork();
-	if (childPid == -1)
+	child_pid = fork();
+	if (child_pid == -1)
 	{
 		perror("Error:");
 		return;
 	}
-	if (childPid == 0)
+	if (child_pid == 0)
 	{
-		if (execve(shellInfo->path, shellInfo->arguments, getEnvironmentStrings(shellInfo)) == -1)
+		if (execve(info->path, info->argv, get_environ_strings(info)) == -1)
 		{
-			freeShellInfo(shellInfo, 1);
+			free_info_struct(info, 1);
 			if (errno == EACCES)
 				exit(126);
 			exit(1);
@@ -153,12 +151,12 @@ void executeCommand(ShellInfo *shellInfo)
 	}
 	else
 	{
-		wait(&(shellInfo->status));
-		if (WIFEXITED(shellInfo->status))
+		wait(&(info->status));
+		if (WIFEXITED(info->status))
 		{
-			shellInfo->status = WEXITSTATUS(shellInfo->status);
-			if (shellInfo->status == 126)
-				printError(shellInfo, "Permission denied\n");
+			info->status = WEXITSTATUS(info->status);
+			if (info->status == 126)
+				print_error(info, "Permission denied\n");
 		}
 	}
 }

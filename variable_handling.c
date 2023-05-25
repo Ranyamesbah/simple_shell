@@ -1,11 +1,12 @@
 #include "header_main.h"
+
 /**
- * is_chain - Tests if the current character in the buffer is a chain delimiter
- * @info: The parameter struct
- * @buf: The character buffer
- * @p: Address of the current position in buf
+ * is_chain - test if current char in buffer is a chain delimeter
+ * @info: the parameter struct
+ * @buf: the char buffer
+ * @p: address of current position in buf
  *
- * Return: 1 if chain delimiter, 0 otherwise
+ * Return: 1 if chain delimeter, 0 otherwise
  */
 int is_chain(info_t *info, char *buf, size_t *p)
 {
@@ -30,21 +31,17 @@ int is_chain(info_t *info, char *buf, size_t *p)
 	}
 	else
 		return (0);
-
 	*p = j;
 	return (1);
 }
+
 /**
-<<<<<<< HEAD
- * check_chain - Checks whether we should continue chaining
-=======
- * check_chain - we should continue chaining based on the last status
->>>>>>> f80cb16ea2713056d9bf2dd4ac9dc81bb44cb5af
- * @info: The parameter struct
- * @buf: The character buffer
- * @p: Address of the current position in buf
- * @i: Starting position in buf
- * @len: Length of buf
+ * check_chain - checks we should continue chaining based on last status
+ * @info: the parameter struct
+ * @buf: the char buffer
+ * @p: address of current position in buf
+ * @i: starting position in buf
+ * @len: length of buf
  *
  * Return: Void
  */
@@ -73,8 +70,8 @@ void check_chain(info_t *info, char *buf, size_t *p, size_t i, size_t len)
 }
 
 /**
- * replace_alias - Replaces an alias in the tokenized string
- * @info: The parameter struct
+ * replace_alias - replaces an aliases in the tokenized string
+ * @info: the parameter struct
  *
  * Return: 1 if replaced, 0 otherwise
  */
@@ -102,8 +99,8 @@ int replace_alias(info_t *info)
 }
 
 /**
- * replace_vars - Replaces variables in the tokenized string
- * @info: The parameter struct
+ * replace_vars - replaces vars in the tokenized string
+ * @info: the parameter struct
  *
  * Return: 1 if replaced, 0 otherwise
  */
@@ -120,38 +117,32 @@ int replace_vars(info_t *info)
 		if (!str_cmp(info->argv[i], "$?"))
 		{
 			replace_string(&(info->argv[i]),
-				string_duplicate(
-					convert_to_string(info->status, 10, 0)
-					)
-				);
+				string_duplicate(convert_to_string(info->status, 10, 0)));
 			continue;
 		}
 		if (!str_cmp(info->argv[i], "$$"))
 		{
 			replace_string(&(info->argv[i]),
-				string_duplicate(convert_to_string(
-						getpid(), 10, 0)
-					)
-				);
+				string_duplicate(convert_to_string(getpid(), 10, 0)));
 			continue;
 		}
 		node = node_with_prefix(info->env, &info->argv[i][1], '=');
 		if (node)
 		{
 			replace_string(&(info->argv[i]),
-				string_duplicate(
-					find_character(node->str, '=') + 1)
-				);
+				string_duplicate(find_character(node->str, '=') + 1));
 			continue;
 		}
 		replace_string(&info->argv[i], string_duplicate(""));
+
 	}
 	return (0);
 }
+
 /**
- * replace_string - Replaces a string
- * @old: Address of the old string
- * @new: New string
+ * replace_string - replaces string
+ * @old: address of old string
+ * @new: new string
  *
  * Return: 1 if replaced, 0 otherwise
  */
