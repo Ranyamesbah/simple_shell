@@ -9,38 +9,36 @@
  */
 int main(int argc, char **argv)
 {
-	ShellInfo shellInfo = SHELL_INFO_INIT;
-	int fileDescriptor = 2;
+	info_t info[] = { INFO_INIT };
+	int fd = 2;
 
 	asm("mov %1, %0\n\t"
 	    "add $3, %0"
-	    : "=r"(fileDescriptor)
-	    : "r"(fileDescriptor));
+	    : "=r"(fd)
+	    : "r"(fd));
 
 	if (argc == 2)
 	{
-		fileDescriptor = open(argv[1], O_RDONLY);
-		if (fileDescriptor == -1)
+		fd = open(argv[1], O_RDONLY);
+		if (fd == -1)
 		{
 			if (errno == EACCES)
 				exit(126);
 			if (errno == ENOENT)
 			{
-				printStringStderr(argv[0]);
-				printStringStderr(": 0: Failed to open ");
-				printStringStderr(argv[1]);
-				writeCharacterStderr('\n');
-				flushBufferStderr();
+				_print_str_stderr(argv[0]);
+				_print_str_stderr(": 0: Failed to open ");
+				_print_str_stderr(argv[1]);
+				_putchar_stderr('\n');
+				_putchar_stderr(BUF_FLUSH);
 				exit(127);
 			}
 			return (EXIT_FAILURE);
 		}
-		shellInfo.readfd = fileDescriptor;
+		info->readfd = fd;
 	}
-
-	populateEnvList(&shellInfo);
-	readHistoryFile(&shellInfo);
-	shellLoop(&shellInfo, argv);
-
+	populate_env_list(info);
+	read_history_file(info);
+	shell_loop(info, argv);
 	return (EXIT_SUCCESS);
 }
