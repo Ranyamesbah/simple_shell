@@ -19,7 +19,7 @@ void clear_info_struct(info_t *info)
  * @info: Pointer to the info_t struct
  * @av: Argument vector
  *
- * Description: Sets the fname, arg, argc, argv, and path fields of the info_t
+ * Description: Sets the fname, arg, argc, argv and path fields of the info_t
  * struct. It also calls replace_alias and replace_vars functions.
  */
 void set_info_struct(info_t *info, char **av)
@@ -27,7 +27,6 @@ void set_info_struct(info_t *info, char **av)
 	int i = 0;
 
 	info->fname = av[0];
-
 	if (info->arg)
 	{
 		info->argv = strtow_delim(info->arg, " \t");
@@ -40,7 +39,6 @@ void set_info_struct(info_t *info, char **av)
 				info->argv[1] = NULL;
 			}
 		}
-
 		for (i = 0; info->argv && info->argv[i]; i++)
 			;
 		info->argc = i;
@@ -57,7 +55,7 @@ void set_info_struct(info_t *info, char **av)
  *
  * Description: Frees the memory allocated for the argv field of the info_t
  * struct. If all is true, it also frees the memory allocated for arg, env,
- * history, alias, environ, and cmd_buf fields of the info_t struct. Finally,
+ * history, alias, environ and cmd_buf fields of the info_t struct. Finally,
  * it closes the readfd file descriptor and clears the buffer.
  */
 void free_info_struct(info_t *info, int all)
@@ -65,7 +63,6 @@ void free_info_struct(info_t *info, int all)
 	free_string_array(info->argv);
 	info->argv = NULL;
 	info->path = NULL;
-
 	if (all)
 	{
 		if (!info->cmd_buf)
@@ -78,10 +75,9 @@ void free_info_struct(info_t *info, int all)
 			free_list_nodes(&(info->alias));
 		free_string_array(info->environ);
 		info->environ = NULL;
-		free_and_nullify_ptr((void **)&info->cmd_buf);
+		free_and_nullify_ptr((void **)info->cmd_buf);
 		if (info->readfd > 2)
 			close(info->readfd);
 		write_character(BUF_FLUSH);
 	}
 }
-
