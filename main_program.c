@@ -4,16 +4,11 @@
  * main - Entry point for the program.
  * @argc: Argument count.
  * @argv: Argument vector.
+ *
  * Return: 0 on success, 1 on error.
  */
-
 int main(int argc, char **argv)
 {
-<<<<<<< HEAD
-=======
-	ShellInfo shellInfo = SHELL_INFO_INIT;
-	int fileDescriptor = 2;
->>>>>>> 3c39c70f772a5b33bd8bda33a0baf894124e032a
 	info_t info[] = { INFO_INIT };
 	int fd = 2;
 
